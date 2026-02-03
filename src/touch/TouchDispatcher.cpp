@@ -105,6 +105,8 @@ void TouchDispatcher::clicks(TouchEvent* touch, TouchType type) {
     const auto button = touch->getButton();
     const CCPoint location = touch->getLocation();
 
+    bool clickBlocked = false;
+
     for (auto handler : CCArrayExt<CCTargetedTouchHandler*>(m_impl->m_dispatcher->m_pTargetedHandlers)) {
         bool touchClaimed = false;
         auto node = typeinfo_cast<CCNode*>(handler->getDelegate());
@@ -116,7 +118,7 @@ void TouchDispatcher::clicks(TouchEvent* touch, TouchType type) {
             const bool swallows = handler->m_bSwallowsTouches;
 
             if (swallows && insideNode) {
-                break;
+                clickBlocked = true;
             }
             continue;
         }
@@ -128,7 +130,7 @@ void TouchDispatcher::clicks(TouchEvent* touch, TouchType type) {
             }
         }
 
-        if (type == TouchType::CLICK_BEGAN) {
+        if (type == TouchType::CLICK_BEGAN && !clickBlocked) {
             touchClaimed = delegate->clickBegan(touch);
 
             if (touchClaimed) {

@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include "API.hpp"
-#include <geode.devtools/include/API.hpp>
 
 using namespace geode::prelude;
 using namespace alpha::prelude;

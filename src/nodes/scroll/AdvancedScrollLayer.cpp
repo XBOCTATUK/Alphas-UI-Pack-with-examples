@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include "API.hpp"
-#include <geode.devtools/include/API.hpp>
+//#include <geode.devtools/include/API.hpp>
 
 using namespace geode::prelude;
 using namespace alpha::prelude;
@@ -65,7 +65,7 @@ AdvancedScrollLayer::AdvancedScrollLayer() : m_impl(std::make_unique<Impl>()) {}
 AdvancedScrollLayer::~AdvancedScrollLayer() = default;
 
 void AdvancedScrollLayer::registerDevTools() {
-    devtools::registerNode<AdvancedScrollLayer>([](AdvancedScrollLayer* node) {
+    /*devtools::registerNode<AdvancedScrollLayer>([](AdvancedScrollLayer* node) {
 
         devtools::label(fmt::format("Holding: {}", node->m_impl->m_holding).c_str());
         devtools::label(fmt::format("Dragging: {}", node->m_impl->m_dragging).c_str());
@@ -118,7 +118,7 @@ void AdvancedScrollLayer::registerDevTools() {
 
     devtools::registerNode<ScrollContent>([](ScrollContent* node) {
         devtools::property("Scroll Position", node->getScrollLayer()->m_impl->m_scrollPoint);
-    });
+    });*/
 }
 
 AdvancedScrollLayer* AdvancedScrollLayer::create(const CCSize& size, const CullingMethod& cullingMethod) {
@@ -1090,8 +1090,8 @@ void AdvancedScrollLayer::setZoom(float zoom) {
     m_impl->m_contentContainer->setScale(std::clamp(zoom, m_impl->m_minZoom, m_impl->m_maxZoom));
 }
 
-$execute {
+/*$execute {
     devtools::waitForDevTools([] {
         AdvancedScrollLayer::registerDevTools();
     });
-}
+}*/
