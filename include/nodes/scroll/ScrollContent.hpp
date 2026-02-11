@@ -35,6 +35,13 @@ public:
      */
     static ScrollContent* create(AdvancedScrollLayer* scrollLayer);
 
+    /**
+     * @brief Returns the scroll layer managing this content.
+     *
+     * @return Pointer to the associated AdvancedScrollLayer.
+     */
+    AdvancedScrollLayer* getScrollLayer();
+
 private:
     /**
      * @brief Initializes the ScrollContent with a scroll layer.
@@ -43,13 +50,6 @@ private:
      * @return True if initialization succeeds; false otherwise.
      */
     bool init(AdvancedScrollLayer* scrollLayer);
-
-    /**
-     * @brief Returns the scroll layer managing this content.
-     *
-     * @return Pointer to the associated AdvancedScrollLayer.
-     */
-    AdvancedScrollLayer* getScrollLayer();
 
     // Prevent these methods from being used directly:
     virtual void setAnchorPoint(const cocos2d::CCPoint& anchor) override;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GUI/CCControlExtension/CCScale9Sprite.h>
+#include <Geode/ui/NineSlice.hpp>
 #include "../ScrollBarElement.hpp"
 #include "../../../export.hpp"
 

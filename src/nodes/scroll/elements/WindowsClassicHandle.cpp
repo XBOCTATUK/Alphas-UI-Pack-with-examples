@@ -5,7 +5,7 @@ using namespace geode::prelude;
 using namespace alpha::prelude;
 
 struct WindowsClassicHandle::Impl final {
-    cocos2d::extension::CCScale9Sprite* m_background;
+    geode::NineSlice* m_background;
 };
 
 WindowsClassicHandle::WindowsClassicHandle() : m_impl(std::make_unique<Impl>()) {}
@@ -24,7 +24,7 @@ WindowsClassicHandle* WindowsClassicHandle::create() {
 bool WindowsClassicHandle::init() {
     if (!ScrollBarElement::init()) return false;
 
-    m_impl->m_background = CCScale9Sprite::create("WindowsClassic.png"_spr);
+    m_impl->m_background = geode::NineSlice::create("WindowsClassic.png"_spr);
     m_impl->m_background->setScale(0.5f);
 
     addChild(m_impl->m_background);

@@ -60,6 +60,13 @@ public:
     int getTouchPriority();
 
     /**
+     * @brief Sets if the blocker should work.
+     *
+     * @param enabled If it should block touches.
+     */
+    void setEnabled(bool enabled);
+
+    /**
      * @brief Sets the target node for this blocker.
      *
      * @param node Node that will be checked to block touches.

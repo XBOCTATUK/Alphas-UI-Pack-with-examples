@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Geode/cocos/base_nodes/CCNode.h>
-
+#include <Geode/ui/NineSlice.hpp>
 #include "AdvancedScrollBar.hpp"
 #include "ScrollContent.hpp"
 #include "AdvancedScrollDelegate.hpp"
@@ -170,6 +170,10 @@ public:
     /// Allows clicks to pass through empty areas.
     void allowEmptyClickThrough(bool allow);
     bool allowsEmptyClickThrough();
+
+    /// Doesn't allow clicks to pass through.
+    void blockTouchBehind(bool blocked);
+    bool blocksTouchBehind();
 
     /// Scrollable bounds and scroll percentages.
     float getHorizontalMax();

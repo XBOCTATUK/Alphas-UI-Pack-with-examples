@@ -25,6 +25,8 @@ struct AdvancedScrollLayer::Impl final {
 
     bool m_allowsZoom = false;
 
+    bool m_blockerEnabled = false;
+
     float m_overshoot = 50.f;
     float m_friction = 0.7f;
     float m_minVelocity = 200.f;
@@ -41,6 +43,9 @@ struct AdvancedScrollLayer::Impl final {
     bool m_touchFixQueued = false;
 
     int m_touchPrio = 0;
+
+    CCPoint m_prevTouchLocation;
+    CCPoint m_prevScrollPoint {FLT_MIN, FLT_MIN};
 
     Ref<CCActionEase> m_verticalBack;
     Ref<CCActionEase> m_horizontalBack;
@@ -224,9 +229,20 @@ void AdvancedScrollLayer::handleTouchPrio() {
         }
     }
     
-    if (auto delegate = static_cast<CCTouchDelegate*>(this)) {
+    runAction(CallFuncExt::create([this, minPrio] {
+
+    setTouchPriority(minPrio - 1);
+        if (auto delegate = static_cast<CCTouchDelegate*>(this)) {
+            if (auto handler = CCTouchDispatcher::get()->findHandler(delegate)) {
+                CCTouchDispatcher::get()->setPriority(minPrio - 1, handler->getDelegate());
+            }
+        }
+    }));
+
+    m_impl->m_blockLayer->setTouchPriority(minPrio + 1);
+    if (auto delegate = static_cast<CCTouchDelegate*>(m_impl->m_blockLayer)) {
         if (auto handler = CCTouchDispatcher::get()->findHandler(delegate)) {
-            CCTouchDispatcher::get()->setPriority(minPrio - 1, handler->getDelegate());
+            CCTouchDispatcher::get()->setPriority(minPrio + 1, handler->getDelegate());
         }
     }
 }
@@ -248,6 +264,11 @@ void AdvancedScrollLayer::onEnter() {
     m_impl->m_clippingNode->onEnter();
     m_impl->m_blockLayer->onEnter();
 
+    runAction(CallFuncExt::create([this] {
+        m_impl->m_prevScrollPoint = CCPoint{FLT_MIN, FLT_MIN};
+    }));
+
+    m_impl->m_prevScrollPoint = CCPoint{FLT_MIN, FLT_MIN};
     update(0);
 
     m_impl->m_touchFixQueued = true;
@@ -366,9 +387,6 @@ void AdvancedScrollLayer::cancelTouchesRecursive(CCNode* node, CCTouch* touch, C
     if (auto delegate = typeinfo_cast<CCTouchDelegate*>(node)) {
         delegate->ccTouchCancelled(touch, event);
     }
-    if (auto delegate = typeinfo_cast<TouchDelegate*>(node)) {
-        delegate->ccTouchCancelled(touch, event);
-    }
 
     for (auto child : node->getChildrenExt()) {
         cancelTouchesRecursive(child, touch, event);
@@ -382,7 +400,7 @@ void AdvancedScrollLayer::cancelChildrenTouches(CCTouch* touch, CCEvent* event) 
 bool AdvancedScrollLayer::ccTouchBegan(CCTouch* touch, CCEvent* event) {
     if (!nodeIsVisible(this)) return false;
     m_impl->m_activeTouches.push_back(touch);
-
+    m_impl->m_prevTouchLocation = touch->getLocation();
 
     if (!alpha::utils::isPointInsideNode(m_impl->m_clickNode, touch->getLocation())) {
         setVisible(false);
@@ -431,16 +449,23 @@ void AdvancedScrollLayer::ccTouchMoved(CCTouch* touch, CCEvent* event) {
     }*/
 
     //if (m_impl->m_activeTouches.size() == 1) {
-        CCPoint prev = convertToNodeSpace(touch->getPreviousLocation());
-        CCPoint curr = convertToNodeSpace(touch->getLocation());
+        auto touchLocation = touch->getLocation();
+
+        CCPoint prev = convertToNodeSpace(m_impl->m_prevTouchLocation);
+        CCPoint curr = convertToNodeSpace(touchLocation);
         CCPoint delta = curr - prev;
+
+        m_impl->m_prevTouchLocation = touchLocation;
 
         if (!m_impl->m_dragging && delta.getLength() > 0.5f) {
             m_impl->m_dragging = true;
             cancelChildrenTouches(touch, event);
+            touch->m_point = CCPoint{FLT_MIN, FLT_MIN};
         }
 
         if (m_impl->m_dragging) {
+            touch->m_point = CCPoint{FLT_MIN, FLT_MIN};
+
             CCPoint pos = m_impl->m_contentContainer->getPosition(); 
             if (m_impl->m_horizontalScroll) pos.x += delta.x; 
             if (m_impl->m_verticalScroll) pos.y += delta.y; 
@@ -455,7 +480,7 @@ void AdvancedScrollLayer::ccTouchMoved(CCTouch* touch, CCEvent* event) {
 
             m_impl->m_contentContainer->setPosition(pos);
 
-            m_impl->m_samples.push_back({touch->getLocation(), alpha::utils::nowSeconds()});
+            m_impl->m_samples.push_back({touchLocation, alpha::utils::nowSeconds()});
             if (m_impl->m_samples.size() > 3) {
                 m_impl->m_samples.erase(m_impl->m_samples.begin());
             }
@@ -708,6 +733,7 @@ void AdvancedScrollLayer::constrain(bool skipInertiaCheck) {
 
 void AdvancedScrollLayer::cull() {
     if (!m_impl->m_cullingEnabled) return;
+    if (m_impl->m_prevScrollPoint == m_impl->m_scrollPoint) return;
     if (m_impl->m_cullingMethod) return m_impl->m_cullingMethod(m_impl->m_content, m_impl->m_scrollPoint);
 
     auto world = alpha::utils::rectToWorld(this);
@@ -783,6 +809,7 @@ void AdvancedScrollLayer::update(float dt) {
     m_impl->m_scrollPoint.y = m_impl->m_contentContainer->getPositionY() - getContentHeight();
 
     cull();
+    m_impl->m_prevScrollPoint = m_impl->m_scrollPoint;
 }
 
 void AdvancedScrollLayer::scroll(float x, float y) {
@@ -953,11 +980,11 @@ void AdvancedScrollLayer::zoom(float zoomDelta) {
 }
 
 float AdvancedScrollLayer::getHorizontalMax() {
-    return std::max(m_impl->m_contentContainer->getScaledContentWidth() - getContentWidth(), 0.f);
+    return std::max(m_impl->m_content->getScaledContentWidth() * m_impl->m_contentContainer->getScale() - getContentWidth(), 0.f);
 }
 
 float AdvancedScrollLayer::getVerticalMax() {
-    return std::max(m_impl->m_contentContainer->getScaledContentHeight() - getContentHeight(), 0.f);
+    return std::max(m_impl->m_content->getScaledContentHeight() * m_impl->m_contentContainer->getScale() - getContentHeight(), 0.f);
 }
 
 float AdvancedScrollLayer::getHorizontalScrollPercent() {
@@ -1064,6 +1091,15 @@ void AdvancedScrollLayer::allowZoom(bool allow) {
 
 bool AdvancedScrollLayer::allowsZoom() {
     return m_impl->m_allowsZoom;
+}
+
+void AdvancedScrollLayer::blockTouchBehind(bool blocked) {
+    m_impl->m_blockerEnabled = blocked;
+    m_impl->m_blockLayer->setEnabled(!blocked);
+}
+
+bool AdvancedScrollLayer::blocksTouchBehind() {
+    return m_impl->m_blockerEnabled;
 }
 
 void AdvancedScrollLayer::setMinZoom(float value) {

@@ -7,6 +7,7 @@ using namespace alpha::prelude;
 struct TouchBlocker::Impl final {
     CCNode* m_target;
     int m_touchPriority;
+    bool m_enabled = false;
 };
 
 TouchBlocker::TouchBlocker() : m_impl(std::make_unique<Impl>()) {}
@@ -41,7 +42,12 @@ void TouchBlocker::onExit() {
 }
 
 bool TouchBlocker::clickBegan(TouchEvent* touch) {
+    if (!m_impl->m_enabled) return false;
     return alpha::utils::isPointInsideNode(m_impl->m_target, touch->getLocation());
+}
+
+void TouchBlocker::setEnabled(bool enabled) {
+    m_impl->m_enabled = enabled;
 }
 
 void TouchBlocker::setTarget(CCNode* node) {

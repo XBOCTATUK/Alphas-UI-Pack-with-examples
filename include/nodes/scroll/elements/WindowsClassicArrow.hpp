@@ -1,7 +1,7 @@
 #pragma once
 
-#include <GUI/CCControlExtension/CCScale9Sprite.h>
 #include <Geode/cocos/sprite_nodes/CCSprite.h>
+#include <Geode/ui/NineSlice.hpp>
 #include "../ScrollArrowElement.hpp"
 #include "../../../export.hpp"
 #include "ccTypes.h"

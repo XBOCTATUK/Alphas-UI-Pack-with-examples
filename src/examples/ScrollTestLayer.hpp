@@ -30,7 +30,7 @@ struct WindowsClassicButton : public CCNodeRGBA, public TouchDelegate {
         m_closeSpr->setZOrder(1);
         m_closeSpr->setPosition(getContentSize()/2);
 
-        m_background = CCScale9Sprite::create("WindowsClassic.png"_spr);
+        m_background = geode::NineSlice::create("WindowsClassic.png"_spr);
         m_background->setScale(0.5f);
         m_background->setColor({60, 60, 60});
         m_background->setContentSize(CCSize{8, 8} / m_background->getScale());
@@ -90,22 +90,22 @@ struct WindowsClassicButton : public CCNodeRGBA, public TouchDelegate {
     }
 
     std::function<void()> m_callback;
-    CCScale9Sprite* m_background;
+    geode::NineSlice* m_background;
     CCSprite* m_closeSpr;
 };
 
 struct ScrollTestLayer : public CCNode, public TouchDelegate {
 
-    CCScale9Sprite* m_background;
+    geode::NineSlice* m_background;
     AdvancedScrollLayer* m_scrollLayer;
     RenderNode* m_render;
-    CCScale9Sprite* m_renderShadow;
+    geode::NineSlice* m_renderShadow;
     SimpleColorPicker* m_colorPicker;
     AdvancedScrollBar* m_verticalScrollBar;
     AdvancedScrollBar* m_horizontalScrollBar;
     CCLayerColor* m_artBackground;
     ArtNode* m_artNode;
-    CCScale9Sprite* m_artShadow;
+    geode::NineSlice* m_artShadow;
     CCSize m_size = {1500, 1500};
 
     CCNode* m_container;
@@ -275,7 +275,7 @@ struct ScrollTestLayer : public CCNode, public TouchDelegate {
 
         m_titleBar->addChild(m_closeButton);
 
-        m_background = CCScale9Sprite::create("WindowsClassic.png"_spr);
+        m_background = geode::NineSlice::create("WindowsClassic.png"_spr);
         m_background->setScale(0.5f);
 
         m_background->setColor({30, 30, 30});
@@ -304,7 +304,7 @@ struct ScrollTestLayer : public CCNode, public TouchDelegate {
         m_artNode->setZOrder(1);
         //m_artNode->setTouchPriority(-501);
 
-        m_artShadow = CCScale9Sprite::create("Shadow.png"_spr);
+        m_artShadow = geode::NineSlice::create("Shadow.png"_spr);
         m_artShadow->setScale(8);
         m_artShadow->setAnchorPoint({0.5f, 0.5f});
         m_artShadow->setColor({0, 0, 0});
@@ -331,7 +331,7 @@ struct ScrollTestLayer : public CCNode, public TouchDelegate {
 
 		m_container->addChild(m_render);
 
-        m_renderShadow = CCScale9Sprite::create("Shadow.png"_spr);
+        m_renderShadow = geode::NineSlice::create("Shadow.png"_spr);
         m_renderShadow->setScale(2);
         m_renderShadow->setAnchorPoint(m_render->getAnchorPoint());
         m_renderShadow->setColor({0, 0, 0});
