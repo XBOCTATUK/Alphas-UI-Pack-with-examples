@@ -134,7 +134,7 @@ public:
     bool isDraggingEnabled();
 
     /// Enable/disable vertical or horizontal scrolling.
-    void setVeritcalScroll(bool value);
+    void setVerticalScroll(bool value);
     void setHorizontalScroll(bool value);
     bool hasVerticalScroll();
     bool hasHorizontalScroll();

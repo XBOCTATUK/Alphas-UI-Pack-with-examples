@@ -46,6 +46,17 @@ void RoundedScrollTrack::onRelease(const cocos2d::CCPoint& pos) {
 }
 
 void RoundedScrollTrack::draw() {
+
+    GLboolean blendEnabled;
+    glGetBooleanv(GL_BLEND, &blendEnabled);
+
+    GLint src, dst;
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &src);
+    glGetIntegerv(GL_BLEND_DST_ALPHA, &dst);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     CCNodeRGBA::draw();
 
     float w = getContentWidth();
@@ -91,6 +102,9 @@ void RoundedScrollTrack::draw() {
     }
 
     ccDrawSolidPoly(vertices.data(), vertices.size(), colorF);
+
+    glBlendFunc(src, dst);
+    if (!blendEnabled) glDisable(GL_BLEND);
 }
 
 void RoundedScrollTrack::setBackgroundColor(const cocos2d::ccColor4B& color) {

@@ -1003,7 +1003,7 @@ float AdvancedScrollLayer::getVerticalPages() {
     return m_impl->m_contentContainer->getScaledContentHeight() / getContentHeight();
 }
 
-void AdvancedScrollLayer::setVeritcalScroll(bool value) {
+void AdvancedScrollLayer::setVerticalScroll(bool value) {
     m_impl->m_verticalScroll = value;
 }
 

@@ -1,3 +1,7 @@
+# 1.0.1-beta.3
+- Fix blending bleeding into RoundedScrollHandle and RoundedScrollTrack
+- Fix typo: `AdvancedScrollLayer::setVeritcalScroll` is now `AdvancedScrollLayer::setVerticalScroll`
+
 # 1.0.1-beta.2
 - Geode Alpha 2 support
 - Switch to geode::NineSlice
