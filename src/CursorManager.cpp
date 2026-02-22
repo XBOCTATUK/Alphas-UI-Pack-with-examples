@@ -63,6 +63,10 @@ void CursorManager::init() {
     m_cursors[Cursor::SIZE_NS]     = LoadCursor(NULL, IDC_SIZENS);
     m_cursors[Cursor::NOT_ALLOWED] = LoadCursor(NULL, IDC_NO);
     m_cursors[Cursor::HAND]        = LoadCursor(NULL, IDC_HAND);
+
+    GameEvent(GameEventType::Exiting).listen([] {
+        CursorManager::get()->setCursor(Cursor::ARROW);
+    }).leak();
 }
 
 void CursorManager::setCursor(Cursor cursor) {

@@ -13,6 +13,10 @@ void CursorManager::init() {
     m_cursors[Cursor::NOT_ALLOWED] = (__bridge void*)[NSCursor operationNotAllowedCursor];
     m_cursors[Cursor::SIZE_WE]     = (__bridge void*)[NSCursor resizeLeftRightCursor];
     m_cursors[Cursor::SIZE_NS]     = (__bridge void*)[NSCursor resizeUpDownCursor];
+
+    GameEvent(GameEventType::Exiting).listen([] {
+        CursorManager::get()->setCursor(Cursor::ARROW);
+    }).leak();
 }
 
 void CursorManager::setCursor(Cursor cursor) {

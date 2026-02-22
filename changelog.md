@@ -1,3 +1,6 @@
+# 1.0.2
+- Reset cursor on close
+
 # 1.0.1
 - Fix blending bleeding into RoundedScrollHandle and RoundedScrollTrack
 - Fix typo: `AdvancedScrollLayer::setVeritcalScroll` is now `AdvancedScrollLayer::setVerticalScroll`
