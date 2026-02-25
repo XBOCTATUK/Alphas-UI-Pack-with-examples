@@ -6,7 +6,7 @@ using namespace geode::prelude;
 using namespace alpha::prelude;
 
 void CursorManager::init() {
-    m_cursors[Cursor::ARROW]       = (__bridge void*)[NSCursor arrowCursor];
+    /*m_cursors[Cursor::ARROW]       = (__bridge void*)[NSCursor arrowCursor];
     m_cursors[Cursor::TEXT]        = (__bridge void*)[NSCursor IBeamCursor];
     m_cursors[Cursor::CROSS]       = (__bridge void*)[NSCursor crosshairCursor];
     m_cursors[Cursor::HAND]        = (__bridge void*)[NSCursor pointingHandCursor];
@@ -16,19 +16,19 @@ void CursorManager::init() {
 
     GameEvent(GameEventType::Exiting).listen([] {
         CursorManager::get()->setCursor(Cursor::ARROW);
-    }).leak();
+    }).leak();*/
 }
 
 void CursorManager::setCursor(Cursor cursor) {
-    m_currentCursor = cursor;
+    /*m_currentCursor = cursor;
     if (auto it = m_cursors.find(cursor); it != m_cursors.end()) {
         NSCursor* cursor = (__bridge NSCursor*)it->second;
         [cursor set];
-    }
+    }*/
 }
 
 void CursorManager::resetCursor() {
-    if (m_currentCursor == Cursor::NONE) {
+    /*if (m_currentCursor == Cursor::NONE) {
         if (!m_hidden) {
             [NSCursor hide];
             m_hidden = true;
@@ -46,11 +46,11 @@ void CursorManager::resetCursor() {
     if (auto it = m_cursors.find(m_currentCursor); it != m_cursors.end()) {
         NSCursor* cursor = (__bridge NSCursor*)it->second;
         [cursor set];
-    }
+    }*/
 }
 
 void CursorManager::update(float dt) {
-    if (isMouseInWindow()) {
+    /*if (isMouseInWindow()) {
         resetCursor();
     }
     else {
@@ -59,5 +59,5 @@ void CursorManager::update(float dt) {
             m_hidden = false;
             [NSCursor unhide];
         }
-    }
+    }*/
 }

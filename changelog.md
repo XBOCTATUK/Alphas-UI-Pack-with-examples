@@ -1,3 +1,7 @@
+# 1.0.3
+- Removing cursor support on MacOS for now. Restoring state is impossible currently.
+- Fix some ScrollLayer bugs
+
 # 1.0.2
 - Reset cursor on close
 
