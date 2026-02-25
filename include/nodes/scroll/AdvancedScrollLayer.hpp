@@ -192,7 +192,6 @@ public:
     virtual void setContentSize(const cocos2d::CCSize& size) override;
     virtual void onEnter() override;
     virtual void onExit() override;
-    virtual void visit() override;
 
     virtual void addChild(cocos2d::CCNode* child, int zOrder, int tag) override;
     virtual void removeChild(cocos2d::CCNode* child, bool cleanup) override;

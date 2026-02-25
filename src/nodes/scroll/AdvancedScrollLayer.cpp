@@ -170,19 +170,15 @@ bool AdvancedScrollLayer::init(const CCSize& size, CullingMethod cullingMethod) 
     m_impl->m_clippingNode = CCClippingNode::create(m_impl->m_stencil);
     m_impl->m_clippingNode->setAnchorPoint({0.5f, 0.5f});
     m_impl->m_clippingNode->addChild(m_impl->m_contentContainer);
-    m_impl->m_clippingNode->m_pParent = this;
+
+    CCNode::addChild(m_impl->m_clippingNode, 0, 0);
 
     m_impl->m_clickNode = this;
     m_impl->m_blockLayer = TouchBlocker::create(this);
-    m_impl->m_blockLayer->m_pParent = this; // better touch prio compat
+    m_impl->m_blockLayer->setEnabled(true);
+
+    CCNode::addChild(m_impl->m_blockLayer, 0, 0);
     m_impl->m_blockLayer->setZOrder(-1);
-
-    // You need to allocate it even if it is never used, since cocos never checks if it exists in sortAllChildren
-    // which is called by updateLayout. This is normally not an issue, but since devtools updates the layout 
-    // when you change content size, it will lead to a crash. 
-
-    m_pChildren = CCArray::create();
-    m_pChildren->retain();
 
     setTouchPriority(-130);
     setContentSize(size);
@@ -261,9 +257,6 @@ void AdvancedScrollLayer::onEnter() {
     CCTouchDispatcher::get()->addTargetedDelegate(this, getTouchPriority(), false);
     ScrollDispatcher::get()->registerScroll(this);
 
-    m_impl->m_clippingNode->onEnter();
-    m_impl->m_blockLayer->onEnter();
-
     runAction(CallFuncExt::create([this] {
         m_impl->m_prevScrollPoint = CCPoint{FLT_MIN, FLT_MIN};
     }));
@@ -278,9 +271,6 @@ void AdvancedScrollLayer::onExit() {
     CCNode::onExit();
     CCTouchDispatcher::get()->removeDelegate(this);
     ScrollDispatcher::get()->unregisterScroll(this);
-
-    m_impl->m_clippingNode->onExit();
-    m_impl->m_blockLayer->onExit();
 }
 
 // We don't actually want AdvancedScrollLayer to have any "real" children for the sake of simplicity.
@@ -299,25 +289,12 @@ void AdvancedScrollLayer::addChild(CCNode* child, int zOrder, int tag) {
     m_impl->m_content->addChild(child, zOrder, tag);
 }
 
-void AdvancedScrollLayer::removeChild(CCNode* child, bool cleanup) {
+void AdvancedScrollLayer::removeChild(CCNode* child, bool cleanup) {    
     m_impl->m_content->removeChild(child, cleanup);
 }
 
 void AdvancedScrollLayer::removeAllChildrenWithCleanup(bool cleanup) {
     m_impl->m_content->removeAllChildrenWithCleanup(cleanup);
-}
-
-// I override visit to visit only the clipping node as this node has no "real" children.
-void AdvancedScrollLayer::visit() {
-    if (!m_bVisible) return;
-    kmGLPushMatrix();
-
-    transform();
-    draw();
-    m_impl->m_clippingNode->visit();
-
-    m_uOrderOfArrival = 0;
-    kmGLPopMatrix();
 }
 
 void AdvancedScrollLayer::setMinContainerSize() {
