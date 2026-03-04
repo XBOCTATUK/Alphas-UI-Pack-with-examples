@@ -1,3 +1,6 @@
+# 1.0.4
+- Remove cursor support for all platforms. Too annoying to deal with.
+
 # 1.0.3
 - Removing cursor support on MacOS for now. Restoring state is impossible currently.
 - Fix some ScrollLayer bugs
